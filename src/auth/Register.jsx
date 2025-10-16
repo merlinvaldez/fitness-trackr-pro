@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { useAuth } from "./AuthContext";
-import { usePage } from "../layout/PageContext";
+import { Link, Navigate } from "react-router";
 
 /** A form that allows users to register for a new account */
 export default function Register() {
   const { register } = useAuth();
-  const { setPage } = usePage();
 
   const [error, setError] = useState(null);
+  const [redirect, setRedirect] = useState(false);
 
   const tryRegister = async (formData) => {
     setError(null);
@@ -16,11 +16,13 @@ export default function Register() {
     const password = formData.get("password");
     try {
       await register({ username, password });
-      setPage("activities");
+      setRedirect(true);
     } catch (e) {
       setError(e.message);
     }
   };
+
+  if (redirect) return <Navigate to="/" />;
 
   return (
     <>
@@ -37,9 +39,7 @@ export default function Register() {
         <button>Register</button>
         {error && <p role="alert">{error}</p>}
       </form>
-      <a onClick={() => setPage("login")}>
-        Already have an account? Log in here.
-      </a>
+      <Link to="/Login">Already have an account? Log in here.</Link>
     </>
   );
 }
